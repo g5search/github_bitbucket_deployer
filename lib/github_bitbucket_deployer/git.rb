@@ -91,13 +91,15 @@ module GithubBitbucketDeployer
     def run(command)
       @logger.info "git run command: #{command}"
       result = `#{command} 2>&1`
-      if $?.exitstatus == 0
-        @logger.info("Output from git:\n↓####### GIT ########↓\n#{result}↑##### END GIT ######↑\n")
-        @logger.info $?.to_s
-      else
+
+      @logger.info("Output from git:\n↓####### GIT ########↓\n#{result}↑##### END GIT ######↑\n")
+      @logger.info $?.to_s
+
+      unless $?.exitstatus == 0
         raise GithubBitbucketDeployer::CommandException, result
       end
     end
+
   end
 end
 
