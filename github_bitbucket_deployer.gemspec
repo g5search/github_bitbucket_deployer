@@ -17,7 +17,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "git", "~> 1.2", ">= 1.2.9.1"
   gem.add_dependency "git-ssh-wrapper", "~> 0.1"
-  gem.add_dependency "retriable", "~> 2.1"
 
   gem.add_development_dependency "simplecov", "~> 0.7.1"
   gem.add_development_dependency "rspec", "~> 3.5"

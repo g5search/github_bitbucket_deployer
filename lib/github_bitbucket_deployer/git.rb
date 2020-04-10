@@ -1,6 +1,5 @@
 require 'git'
 require 'git-ssh-wrapper'
-require 'retriable'
 require 'github_bitbucket_deployer/clone_logger_fix'
 
 module GithubBitbucketDeployer
@@ -102,13 +101,19 @@ module GithubBitbucketDeployer
     end
 
     def run
-      Retriable.retriable(on: ::Git::GitExecuteError, tries: 3) do
-        with_ssh { yield }
+      last_error = nil
+      [1, 3, 7].each do |backoff_if_error|
+        begin
+          return with_ssh { yield }
+        rescue ::Git::GitExecuteError => e
+          logger.info("Git Execution Error for #{git_repo_name}, #{repo_dir_path}: #{e.message}")
+          last_error = e
+          sleep(backoff_if_error)
+        end
       end
-    rescue ::Git::GitExecuteError => error
-      logger.error(error)
-      raise GithubBitbucketDeployer::GitRepoLockAlreadyHeldError, error if error.message =~ /index\.lock/
-      raise GithubBitbucketDeployer::CommandException, error
+      logger.error(last_error)
+      raise GithubBitbucketDeployer::GitRepoLockAlreadyHeldError, last_error if last_error.message =~ /index\.lock/
+      raise GithubBitbucketDeployer::CommandException, last_error
     end
 
     def with_ssh
