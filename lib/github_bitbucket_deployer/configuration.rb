@@ -1,9 +1,11 @@
 module GithubBitbucketDeployer
   class Configuration
     OPTIONS = {
-      id_rsa: ENV["ID_RSA"],
-      logger: ::Logger.new(STDOUT),
-      repo_dir: ENV["REPO_DIR"]
+      id_rsa:   ENV["ID_RSA"],
+      logger:   ::Logger.new(STDOUT),
+      repo_dir: ENV["REPO_DIR"],
+      branch:   'master',
+      remote:   'bitucket',
     }
 
     # Defines accessors for all OPTIONS
@@ -28,7 +30,7 @@ module GithubBitbucketDeployer
     # Returns a hash of all configurable options
     def to_hash
       OPTIONS.inject({}) do |hash, option|
-        key = option.first
+        key       = option.first
         hash[key] = self.send(key)
         hash
       end

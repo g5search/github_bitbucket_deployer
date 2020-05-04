@@ -30,20 +30,16 @@ module GithubBitbucketDeployer
       yield(configuration)
     end
 
-    def deploy(options={}, &block)
+    def deploy(options = {}, &block)
       options = configuration.merge(options)
       validate_options(options)
-      git_push_app_to_bitbucket(options, &block)
+      repo = Git.new(options)
+      repo.push_app(&block)
       true
     end
 
     def validate_options(options)
       configuration.validate_presence(options)
-    end
-
-    def git_push_app_to_bitbucket(options, &block)
-      repo = Git.new(options)
-      repo.push_app_to_bitbucket(&block)
     end
   end # class << self
 end

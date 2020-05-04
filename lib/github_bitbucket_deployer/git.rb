@@ -6,7 +6,7 @@ require 'github_bitbucket_deployer/clone_logger_fix'
 module GithubBitbucketDeployer
   class Git
     attr_reader :bitbucket_repo_url, :git_repo_name, :id_rsa, :repo_dir, :logger,
-                :force, :force_pristine_repo_dir
+                :force, :force_pristine_repo_dir, :remote, :branch
 
     def initialize(params)
       params.keys.each do |key|
@@ -15,12 +15,7 @@ module GithubBitbucketDeployer
       @force = true if force.nil?
     end
 
-
-    def push_app_to_bitbucket(remote = 'bitbucket', branch = 'master', &block)
-      push_app(remote, branch, &block)
-    end
-
-    def push_app(remote, branch)
+    def push_app
       begin
         logger.info("push_app remote: #{remote}, branch: #{branch}")
         add_remote(remote)

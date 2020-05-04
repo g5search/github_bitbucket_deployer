@@ -3,7 +3,7 @@ require 'spec_helper'
 describe GithubBitbucketDeployer::Git do
   include GitHelpers
 
-  let(:git) { described_class.new(options) }
+  subject(:git) { described_class.new(options) }
   let(:gentle_git) { described_class.new(gentle_options) }
 
   let(:options) do
@@ -11,11 +11,14 @@ describe GithubBitbucketDeployer::Git do
       git_repo_name:      git_repo_name,
       id_rsa:             id_rsa,
       logger:             logger,
-      repo_dir:           repo_dir }
+      repo_dir:           repo_dir,
+      remote:             remote_name,
+      branch:             branch }
   end
 
+  let(:remote_name) { 'bitbucket' }
+  let(:branch) { 'master' }
   let(:gentle_options) { options.merge(force: false) }
-
   let(:bitbucket_repo_url) { 'git@bitbucket.org:g5dev/some_repo.git' }
   let(:git_repo_name) { 'some_repo' }
   let(:local_repo_folder) { Zlib.crc32(git_repo_name) }
@@ -88,11 +91,11 @@ describe GithubBitbucketDeployer::Git do
     end
   end
 
-  describe '#push_app_to_bitbucket', :fakefs do
+  describe '#push_app', :fakefs do
     subject { push_app }
 
     context 'with default arguments' do
-      let(:push_app) { git.push_app_to_bitbucket }
+      let(:push_app) { git.push_app }
 
       context 'when local repo already exists' do
         before { create_local_repo(working_dir) }
@@ -122,7 +125,7 @@ describe GithubBitbucketDeployer::Git do
         it 'can also be gentle' do
           expect(git_repo).to receive(:push)
                                 .with('bitbucket', 'master', force: false)
-          gentle_git.push_app_to_bitbucket
+          gentle_git.push_app
         end
       end
 
@@ -174,7 +177,7 @@ describe GithubBitbucketDeployer::Git do
     end
 
     context 'with custom arguments' do
-      let(:push_app) { git.push_app_to_bitbucket(remote_name, branch) }
+      let(:push_app) { git.push_app }
 
       let(:remote_name) { 'my_git_server' }
       let(:branch) { 'my_topic_branch' }
@@ -194,7 +197,7 @@ describe GithubBitbucketDeployer::Git do
 
       it 'yields to the block' do
         expect do |block|
-          git.push_app_to_bitbucket(remote_name, branch, &block)
+          git.push_app(&block)
         end.to yield_with_args(git_repo)
       end
 
