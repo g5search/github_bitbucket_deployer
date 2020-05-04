@@ -15,9 +15,14 @@ module GithubBitbucketDeployer
       @force = true if force.nil?
     end
 
-    def push_app_to_bitbucket(remote = 'bitbucket', branch = 'master')
+
+    def push_app_to_bitbucket(remote = 'bitbucket', branch = 'master', &block)
+      push_app(remote, branch, &block)
+    end
+
+    def push_app(remote, branch)
       begin
-        logger.info('push_app_to_bitbucket')
+        logger.info("push_app remote: #{remote}, branch: #{branch}")
         add_remote(remote)
         with_ssh { yield(repo) } if block_given?
         push(remote, branch)
