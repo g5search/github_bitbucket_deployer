@@ -5,7 +5,7 @@ require 'github_bitbucket_deployer/clone_logger_fix'
 
 module GithubBitbucketDeployer
   class Git
-    attr_reader :bitbucket_repo_url, :git_repo_name, :id_rsa, :repo_dir, :logger,
+    attr_reader :repo_url, :git_repo_name, :id_rsa, :repo_dir, :logger,
                 :force, :force_pristine_repo_dir, :remote, :branch
 
     def initialize(params)
@@ -40,8 +40,8 @@ module GithubBitbucketDeployer
     end
 
     def clone
-      logger.info("git clone: cloning #{bitbucket_repo_url} to #{folder}")
-      run { ::Git.clone(bitbucket_repo_url, folder, log: logger, depth: 1) }
+      logger.info("git clone: cloning #{repo_url} to #{folder}")
+      run { ::Git.clone(repo_url, folder, log: logger, depth: 1) }
     end
 
     def pull
@@ -64,7 +64,7 @@ module GithubBitbucketDeployer
     def add_remote(remote = 'bitbucket')
       logger.info("git add_remote: #{remote}")
       repo.remote(remote).remove if repo.remote(remote).url
-      repo.add_remote(remote, bitbucket_repo_url)
+      repo.add_remote(remote, repo_url)
     end
 
     def repo_dir_path

@@ -7,7 +7,7 @@ describe GithubBitbucketDeployer::Git do
   let(:gentle_git) { described_class.new(gentle_options) }
 
   let(:options) do
-    { bitbucket_repo_url: bitbucket_repo_url,
+    { repo_url: repo_url,
       git_repo_name:      git_repo_name,
       id_rsa:             id_rsa,
       logger:             logger,
@@ -19,7 +19,7 @@ describe GithubBitbucketDeployer::Git do
   let(:remote_name) { 'bitbucket' }
   let(:branch) { 'master' }
   let(:gentle_options) { options.merge(force: false) }
-  let(:bitbucket_repo_url) { 'git@bitbucket.org:g5dev/some_repo.git' }
+  let(:repo_url) { 'git@bitbucket.org:g5dev/some_repo.git' }
   let(:git_repo_name) { 'some_repo' }
   let(:local_repo_folder) { Zlib.crc32(git_repo_name) }
   let(:id_rsa) { 'this is the value of my key' }
@@ -37,7 +37,7 @@ describe GithubBitbucketDeployer::Git do
   let(:empty_remote) { instance_double(::Git::Remote, url: nil) }
 
   let(:bitbucket_remote) do
-    instance_double(::Git::Remote, url: bitbucket_repo_url,
+    instance_double(::Git::Remote, url: repo_url,
                     remove:             true)
   end
   before do
@@ -62,8 +62,8 @@ describe GithubBitbucketDeployer::Git do
       expect(git.force_pristine_repo_dir).to be_falsey
     end
 
-    it 'sets the bitbucket_repo_url' do
-      expect(git.bitbucket_repo_url).to eq(bitbucket_repo_url)
+    it 'sets the repo_url' do
+      expect(git.repo_url).to eq(repo_url)
     end
 
     it 'sets the git_repo_name' do
@@ -112,7 +112,7 @@ describe GithubBitbucketDeployer::Git do
 
         it 'creates the bitbucket remote anew' do
           expect(git_repo).to receive(:add_remote)
-                                .with('bitbucket', bitbucket_repo_url)
+                                .with('bitbucket', repo_url)
           push_app
         end
 
@@ -137,14 +137,14 @@ describe GithubBitbucketDeployer::Git do
 
         it 'clones the bitbucket repo into the local folder' do
           expect(::Git).to receive(:clone)
-                             .with(bitbucket_repo_url, working_dir, log: logger, depth: 1)
+                             .with(repo_url, working_dir, log: logger, depth: 1)
                              .and_return(git_repo)
           push_app
         end
 
         it 'creates the bitbucket remote' do
           expect(git_repo).to receive(:add_remote)
-                                .with('bitbucket', bitbucket_repo_url)
+                                .with('bitbucket', repo_url)
           push_app
         end
 
@@ -161,7 +161,7 @@ describe GithubBitbucketDeployer::Git do
           allow(FileUtils).to receive(:rm_rf).and_call_original
         end
         let(:options) do
-          { bitbucket_repo_url:      bitbucket_repo_url,
+          { repo_url:      repo_url,
             git_repo_name:           git_repo_name,
             id_rsa:                  id_rsa,
             logger:                  logger,
@@ -191,7 +191,7 @@ describe GithubBitbucketDeployer::Git do
 
       it 'creates the new remote' do
         expect(git_repo).to receive(:add_remote)
-                              .with(remote_name, bitbucket_repo_url)
+                              .with(remote_name, repo_url)
         push_app
       end
 
@@ -239,7 +239,7 @@ describe GithubBitbucketDeployer::Git do
 
         it 'clones the repo locally' do
           expect(::Git).to receive(:clone)
-                             .with(bitbucket_repo_url, working_dir, log: logger, depth: 1)
+                             .with(repo_url, working_dir, log: logger, depth: 1)
                              .and_return(git_repo)
           repo
         end
@@ -260,7 +260,7 @@ describe GithubBitbucketDeployer::Git do
 
       it 'clones the repo locally' do
         expect(::Git).to receive(:clone)
-                           .with(bitbucket_repo_url, working_dir, log: logger, depth: 1)
+                           .with(repo_url, working_dir, log: logger, depth: 1)
                            .and_return(git_repo)
         repo
       end
@@ -298,7 +298,7 @@ describe GithubBitbucketDeployer::Git do
 
     it 'clones the bitbucket repo into the local folder' do
       expect(::Git).to receive(:clone)
-                         .with(bitbucket_repo_url, working_dir, log: logger, depth: 1)
+                         .with(repo_url, working_dir, log: logger, depth: 1)
                          .and_return(git_repo)
       clone
     end
@@ -440,7 +440,7 @@ describe GithubBitbucketDeployer::Git do
 
         it 'adds the new bitbucket remote' do
           expect(git_repo).to receive(:add_remote)
-                                .with('bitbucket', bitbucket_repo_url)
+                                .with('bitbucket', repo_url)
           add_remote
         end
       end
@@ -456,7 +456,7 @@ describe GithubBitbucketDeployer::Git do
 
         it 'adds the new bitbucket remote' do
           expect(git_repo).to receive(:add_remote)
-                                .with('bitbucket', bitbucket_repo_url)
+                                .with('bitbucket', repo_url)
           add_remote
         end
       end
@@ -488,7 +488,7 @@ describe GithubBitbucketDeployer::Git do
 
         it 'creates the new custom remote' do
           expect(git_repo).to receive(:add_remote)
-                                .with(remote_name, bitbucket_repo_url)
+                                .with(remote_name, repo_url)
           add_remote
         end
       end
@@ -504,7 +504,7 @@ describe GithubBitbucketDeployer::Git do
 
         it 'creates the new custom remote' do
           expect(git_repo).to receive(:add_remote)
-                                .with(remote_name, bitbucket_repo_url)
+                                .with(remote_name, repo_url)
           add_remote
         end
       end
